@@ -1,19 +1,33 @@
 package wrapperservice;
 
+import org.apache.commons.validator.UrlValidator;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 public class IndexController {
 
     private static final String template = "Hello, %s!";
-    private final Random counter = new Random();
+    private final AtomicInteger counter = new AtomicInteger();
+    private UrlValidator validator = new UrlValidator();
+
+    // https://stackoverflow.com/questions/238547/how-do-you-programmatically-download-a-webpage-in-java
+    // https://spring.io/guides/tutorials/bookmarks/
 
     @RequestMapping("/wrapper")
-    public Uri wrapper(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Uri(counter.nextInt(),  String.format(template, name));
+    public Uri wrapper(@RequestParam(value="uri") String uri) {
+        if (null == uri || uri.length() <= 0)
+            throw new ExceptionWrapper.UriNotProvided();
+        else {
+            if (validator.isValid(uri)) {
+                return new Uri(counter.incrementAndGet(),  String.format(template, uri));
+            } else {
+                throw new ExceptionWrapper.NotValidUri(uri);
+            }
+        }
+
     }
 }
+
