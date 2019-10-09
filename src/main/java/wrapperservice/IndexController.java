@@ -4,12 +4,13 @@ import org.apache.commons.validator.UrlValidator;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 public class IndexController {
 
-    private static final String template = "Hello, %s!";
+    private static final String template = "Hello, %s";
     private final AtomicInteger counter = new AtomicInteger();
     private UrlValidator validator = new UrlValidator();
 
@@ -17,17 +18,17 @@ public class IndexController {
     // https://spring.io/guides/tutorials/bookmarks/
 
     @RequestMapping("/wrapper")
-    public Uri wrapper(@RequestParam(value="uri") String uri) {
-        if (null == uri || uri.length() <= 0)
+    public StatusResponse wrapper(@RequestParam(value="uri") String uri) {
+        /*if (null == uri || uri.length() <= 0)
             throw new ExceptionWrapper.UriNotProvided();
-        else {
-            if (validator.isValid(uri)) {
-                return new Uri(counter.incrementAndGet(),  String.format(template, uri));
-            } else {
-                throw new ExceptionWrapper.NotValidUri(uri);
-            }
+        else {*/
+        if (validator.isValid(uri)) {
+            WrapperService wrap = new WrapperService(uri);
+            wrap.createSetOfLinks(uri);
+            return new StatusResponse(uri, "True", "200", "null");
+        } else {
+             throw new ExceptionWrapper.NotValidUri(uri);
         }
-
     }
 }
 
