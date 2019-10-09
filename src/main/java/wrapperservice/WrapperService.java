@@ -101,6 +101,8 @@ public class WrapperService{
             e.printStackTrace();
         } catch (TimeoutException e) {
             e.printStackTrace();
+        } finally{
+            executorService.shutdown();
         }
         return responseList;
 
