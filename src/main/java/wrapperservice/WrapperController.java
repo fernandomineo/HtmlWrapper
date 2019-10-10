@@ -1,21 +1,20 @@
 package wrapperservice;
 
 import org.apache.commons.validator.UrlValidator;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Set;
 
 
 @RestController
-public class IndexController {
+public class WrapperController {
 
     private UrlValidator validator = new UrlValidator();
 
@@ -27,28 +26,25 @@ public class IndexController {
 
 
     @RequestMapping("/wrapper")
-    public List<StatusResponse> wrapper(@RequestParam(value="uri") String uri) {
-        boolean reachable = false;
+    public List<StatusResponse> getReachableList(@RequestParam(value="uri") String uri) {
+        Document page;
         if (validator.isValid(uri)) {
             try {
-                reachable = InetAddress.getByName(uri).isReachable(500);
-            } catch (UnknownHostException e) {
-
-            } catch (IOException e){
+                page = Jsoup.connect(uri).get();
+            } catch (Exception e) {
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getCause());
             }
-            if (reachable) {
-                WrapperService wrap = new WrapperService(uri);
-                Set<String> sl = wrap.createSetOfLinks(uri);
-                if (null != sl && sl.size() > 0) {
-                    return wrap.createListOfStatusResponse(sl);
-                }
-            } else {
-                throw new ExceptionWrapper.UnknownHost();
+            if (null != page) {
+                WrapperService wrap = new WrapperService();
+                return wrap.getAllLinkStatusResponse(page);
+            } else { // Jsoup get page not found, normally its related to Unknown Host.
+                throw new ResponseStatusException(
+                        HttpStatus.SERVICE_UNAVAILABLE, "Unknown host");
             }
-            //return new StatusResponse(uri, "True", "200", "null");
-        } else {
-             throw new ExceptionWrapper.NotValidUri(uri);
+        } else { // Not valid URI
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE, "URI Not acceptable");
         }
-        return null;
     }
 }

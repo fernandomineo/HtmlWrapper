@@ -2,7 +2,6 @@ package wrapperservice;
 
 import org.apache.commons.validator.UrlValidator;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -12,28 +11,25 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
+import javax.net.ssl.SSLHandshakeException;
 import java.util.*;
 import java.util.concurrent.*;
 
 
 public class WrapperService{
 
-    private String uri;
+    private Document page;
     private UrlValidator validator = new UrlValidator();
     private static List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
-    public WrapperService(String uri){
-        this.uri = uri;
+    public WrapperService(){
     }
 
-
-    public Set<String> createSetOfLinks(String uri)  {
+    public List<StatusResponse> getAllLinkStatusResponse(Document page)  {
         Set<String> links_set = null;
-        Document page;
         try {
-            page = Jsoup.connect(uri).get();
             if (null != page) {
                 links_set = new HashSet<String>();
                 Elements links = page.getElementsByTag("a");
@@ -45,12 +41,20 @@ public class WrapperService{
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error ", e.getCause());
         }
-        return links_set;
+
+        if (null != links_set && links_set.size() > 0) {
+            return validateEachLinkStatus(links_set);
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
+        }
     }
 
-        public List<StatusResponse> createListOfStatusResponse(Set<String> setOfLinks){
+    private List<StatusResponse> validateEachLinkStatus(Set<String> setOfLinks){
         // Configuring PoolingHttpClient Manager
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
         connManager.setDefaultMaxPerRoute(5);
@@ -73,15 +77,17 @@ public class WrapperService{
                 StatusResponse value = future.get(500, TimeUnit.MILLISECONDS);
                 responseList.add(value);
             }
-        } catch (InterruptedException e) {
-        } catch (ExecutionException e) {
-        } catch (TimeoutException e) {
+        } catch (Exception e) {
+            // Ignore SSLHandshakeException cases
+            if (!e.getLocalizedMessage().contains("SSLHandshakeException")){
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error ", e.getCause());
+            }
         } finally{
             connManager.shutdown();
             executorService.shutdown();
         }
         return responseList;
-
     }
 
     private Callable<StatusResponse> createCallables(CloseableHttpClient client, String page){
@@ -101,7 +107,7 @@ public class WrapperService{
         };
     }
 
-    public StatusResponse responseStatus(HttpResponse response, String uri){
+    private StatusResponse responseStatus(HttpResponse response, String uri){
         Boolean reacheable = false;
         String msg = null;
         Integer error_code = null;

@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.Assert.assertEquals;
 
-public class IndexControllerTest extends AbstractTest {
+public class WrapperControllerTest extends AbstractTest {
 
     @Override
     @Before
