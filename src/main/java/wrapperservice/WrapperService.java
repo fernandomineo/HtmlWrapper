@@ -31,29 +31,26 @@ public class WrapperService{
 
     public Set<String> createSetOfLinks(String uri)  {
         Set<String> links_set = null;
-        Document page = null;
-        try{
+        Document page;
+        try {
             page = Jsoup.connect(uri).get();
-        } catch (UnknownHostException e) {
-            throw new ExceptionWrapper.UnknownHost();
+            if (null != page) {
+                links_set = new HashSet<String>();
+                Elements links = page.getElementsByTag("a");
+                for (Element link : links) {
+                    String href = link.attr("href");
+                    // Only add to set valid and not duplicated urls
+                    if (validator.isValid(href)) {
+                        links_set.add(href.trim());
+                    }
+                }
+            }
         } catch (IOException e) {
-            System.err.println("IOException: " + e.getMessage());
-        }
-        if (null != page) {
-            links_set = new HashSet<String>();
-             Elements links = page.getElementsByTag("a");
-             for (Element link : links) {
-                  String href = link.attr("href");
-                  // Only add to set valid and not duplicated urls
-                  if (validator.isValid(href)) {
-                      links_set.add(href.trim());
-                  }
-              }
         }
         return links_set;
     }
 
-    public List<StatusResponse> createListOfStatusResponse(Set<String> setOfLinks){
+        public List<StatusResponse> createListOfStatusResponse(Set<String> setOfLinks){
         // Configuring PoolingHttpClient Manager
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
         connManager.setDefaultMaxPerRoute(5);

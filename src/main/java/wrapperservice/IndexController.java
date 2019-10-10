@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Set;
 
@@ -25,15 +28,22 @@ public class IndexController {
 
     @RequestMapping("/wrapper")
     public List<StatusResponse> wrapper(@RequestParam(value="uri") String uri) {
-
+        boolean reachable = false;
         if (validator.isValid(uri)) {
-            WrapperService wrap = new WrapperService(uri);
-            Set<String> sl = wrap.createSetOfLinks(uri);
-            for (String i : sl){
-                System.out.println("i = "+ i);
+            try {
+                reachable = InetAddress.getByName(uri).isReachable(500);
+            } catch (UnknownHostException e) {
+
+            } catch (IOException e){
             }
-            if (sl.size() > 0) {
-                return wrap.createListOfStatusResponse(sl);
+            if (reachable) {
+                WrapperService wrap = new WrapperService(uri);
+                Set<String> sl = wrap.createSetOfLinks(uri);
+                if (null != sl && sl.size() > 0) {
+                    return wrap.createListOfStatusResponse(sl);
+                }
+            } else {
+                throw new ExceptionWrapper.UnknownHost();
             }
             //return new StatusResponse(uri, "True", "200", "null");
         } else {
