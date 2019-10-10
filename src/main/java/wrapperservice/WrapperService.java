@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.net.ssl.SSLHandshakeException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -25,7 +28,6 @@ public class WrapperService{
 
     private static Log log = LogFactory.getLog(WrapperService.class);
     private Document page;
-    private UrlValidator validator = new UrlValidator();
     private static List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
     public WrapperService(){
     }
@@ -38,22 +40,21 @@ public class WrapperService{
                 Elements links = page.getElementsByTag("a");
                 for (Element link : links) {
                     String href = link.attr("href");
-                    // Only add to set valid and not duplicated urls
-                    if (validator.isValid(href)) {
+                    // Only add to set valid java.net URI's and not duplicated urls
+                    if (isValidURI(href)) {
                         links_set.add(href.trim());
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("Some internal failure happen in obtain all <a href=XXX > from page");
+            log.error("Some internal failure happen in obtain all <a href=XXX > from page: : getLocalizedMessage:" + e.getLocalizedMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error ", e.getCause());
         }
-
-        if (null != links_set && links_set.size() > 0) {
+        if (links_set.size() > 0) {
             return validateEachLinkStatus(links_set);
         } else {
-            log.error("Some internal failure in list of links creation");
+            log.error("Page return is NULL or EMPTY, some sites can reject this connection, for ex. using CAPTCHA validation");
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
@@ -83,12 +84,8 @@ public class WrapperService{
                 responseList.add(value);
             }
         } catch (Exception e) {
-            // Ignore SSLHandshakeException cases
-            log.error("Internal failure at invokeAll");
-            if (!e.getLocalizedMessage().contains("SSLHandshakeException")){
-                throw new ResponseStatusException(
-                        HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error ", e.getCause());
-            }
+            // Ignore all exceptions and add only valid links, i.e: exclude SSLHandshakeExecption, WrongURIRedirections, etc.
+            log.error("Internal failure at invokeAll: getLocalizedMessage: " + e.getCause().getMessage());
         } finally{
             connManager.shutdown();
             executorService.shutdown();
@@ -101,17 +98,20 @@ public class WrapperService{
         final CloseableHttpClient cli = client;
         return new Callable<StatusResponse>() {
             public StatusResponse call() throws Exception {
-                HttpGet get = new HttpGet(link);
-                HttpResponse response = cli.execute(get);
-                EntityUtils.consume(response.getEntity());
-                log.info("Task thread completed: "+ Thread.currentThread().getName());
-                return responseStatus(response, link);
+                if (isValidURI(link)) {
+                    HttpGet get = new HttpGet(link);
+                    HttpResponse response = cli.execute(get);
+                    EntityUtils.consume(response.getEntity());
+                    log.info("Task thread completed: " + Thread.currentThread().getName());
+                    return responseStatus(response, link);
+                }
+                return null;
             }
         };
     }
 
     private StatusResponse responseStatus(HttpResponse response, String uri){
-        Boolean reacheable = false;
+        boolean reacheable = false;
         String msg = null;
         Integer error_code = null;
         Integer code = response.getStatusLine().getStatusCode();
@@ -123,6 +123,13 @@ public class WrapperService{
         }
         return new StatusResponse(uri, reacheable, error_code, msg);
     }
-
+    public static boolean isValidURI(String uri){
+        try{
+            new URL(uri).toURI();
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+    }
 }
 

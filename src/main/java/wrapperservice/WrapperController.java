@@ -23,16 +23,15 @@ import java.util.List;
 @RestController
 public class WrapperController {
     private static Log log = LogFactory.getLog(WrapperController.class);
-    private UrlValidator validator = new UrlValidator();
 
     @RequestMapping("/wrapper")
     public List<StatusResponse> getReachableList(@RequestParam(value="uri") String uri) {
         Document page;
-        if (validator.isValid(uri)) {
+        if (WrapperService.isValidURI(uri)) {
             try {
                 page = Jsoup.connect(uri).get();
             } catch (Exception e) {// Jsoup get page not found, normally its related to Unknown Host.
-                log.error("Jsoup failed to get page contents, normally its related to unknown hosts.");
+                log.error("Jsoup failed to get page contents, normally its related to unknown hosts: getLocalizedMessage: " + e.getLocalizedMessage());
                 throw new ResponseStatusException(
                         HttpStatus.SERVICE_UNAVAILABLE, "Unknown host");
             }
