@@ -20,6 +20,8 @@ public class IndexController {
     // https://spring.io/guides/tutorials/bookmarks/
     // https://www.baeldung.com/httpclient-connection-management
     // https://github.com/briansjavablog/multi-threading-with-executorservice/blob/master/src/main/java/com/briansjavablog/concurrency/threads/ExecutorServiceCallableSample.java
+    // https://www.baeldung.com/spring-boot-custom-error-page
+
 
     @RequestMapping("/wrapper")
     public List<StatusResponse> wrapper(@RequestParam(value="uri") String uri) {
