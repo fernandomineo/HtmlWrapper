@@ -23,8 +23,16 @@ public class AbstractTest {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
-    protected static String UnknownHost = "http://www.terrrraa.com.br";
-    protected static String MyHTML = "http://www.terrrraa.com.br";
-    protected static String UolPortal = "http://www.uol.com.br";
-    protected static String GooglePortal = "http://www.google.com.br";
+
+    protected static String EMPTY_HOST = "";
+    protected static String INCOMPLETE_HOST = "http://www.";
+    protected static String UNKNOWN_HOST = "http://www.terrrraa.com.br";
+    protected static String NUMBER_PORT_HOST = "http://216.58.202.206:80"; // google.com host
+
+    // Short list ~ 15 Links in page
+    protected static String GOOGLE_HOST = "http://www.google.com.br";
+    // Large list ~ 450 links in page
+    protected static String UOL_PORTA_HOST = "http://www.uol.com.br";
+
+
 }

@@ -17,13 +17,65 @@ public class WrapperControllerTest extends AbstractTest {
     }
 
     @Test
-    public void getUnknowhost() throws Exception {
+    public void getEmptyHost() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.UnknownHost)
+                .param("uri", AbstractTest.EMPTY_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
-        assertEquals(500, status);
+        assertEquals(406, status);
+    }
+
+    @Test
+    public void getUnknownHost() throws Exception {
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
+                .param("uri", AbstractTest.UNKNOWN_HOST)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(503, status);
+    }
+
+    @Test
+    public void getIncompleteHost() throws Exception {
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
+                .param("uri", AbstractTest.INCOMPLETE_HOST)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(406, status);
+    }
+
+    @Test
+    public void getNumberedAndPortHost() throws Exception {
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
+                .param("uri", AbstractTest.NUMBER_PORT_HOST)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+    }
+
+    @Test
+    public void getGoogleUrl() throws Exception {
+        // Short test ~ 15 links
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
+                .param("uri", AbstractTest.GOOGLE_HOST)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+    }
+
+    @Test
+    public void getUolPortalUrl() throws Exception {
+        // Short test ~ 15 links
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
+                .param("uri", AbstractTest.UOL_PORTA_HOST)
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
     }
 
 }

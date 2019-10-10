@@ -1,5 +1,7 @@
 package wrapperservice;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.UrlValidator;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -21,6 +23,7 @@ import java.util.concurrent.*;
 
 public class WrapperService{
 
+    private static Log log = LogFactory.getLog(WrapperService.class);
     private Document page;
     private UrlValidator validator = new UrlValidator();
     private static List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
@@ -42,6 +45,7 @@ public class WrapperService{
                 }
             }
         } catch (Exception e) {
+            log.error("Some internal failure happen in obtain all <a href=XXX > from page");
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error ", e.getCause());
         }
@@ -49,6 +53,7 @@ public class WrapperService{
         if (null != links_set && links_set.size() > 0) {
             return validateEachLinkStatus(links_set);
         } else {
+            log.error("Some internal failure in list of links creation");
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
@@ -79,6 +84,7 @@ public class WrapperService{
             }
         } catch (Exception e) {
             // Ignore SSLHandshakeException cases
+            log.error("Internal failure at invokeAll");
             if (!e.getLocalizedMessage().contains("SSLHandshakeException")){
                 throw new ResponseStatusException(
                         HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error ", e.getCause());
@@ -95,13 +101,10 @@ public class WrapperService{
         final CloseableHttpClient cli = client;
         return new Callable<StatusResponse>() {
             public StatusResponse call() throws Exception {
-                System.out.println(String.format("starting expensive task thread %s",
-                        Thread.currentThread().getName()));
                 HttpGet get = new HttpGet(link);
                 HttpResponse response = cli.execute(get);
                 EntityUtils.consume(response.getEntity());
-                System.out.println(String.format("finished expensive task thread %s",
-                        Thread.currentThread().getName()));
+                log.info("Task thread completed: "+ Thread.currentThread().getName());
                 return responseStatus(response, link);
             }
         };
