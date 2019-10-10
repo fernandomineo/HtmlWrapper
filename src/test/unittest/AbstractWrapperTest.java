@@ -8,12 +8,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import wrapperservice.Application;
+import wrapper.WrapperApplication;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = WrapperApplication.class)
 @WebAppConfiguration
-public class AbstractTest {
+public class AbstractWrapperTest {
     protected MockMvc mvc;
 
     @Autowired

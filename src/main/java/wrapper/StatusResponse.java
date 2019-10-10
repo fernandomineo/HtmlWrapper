@@ -1,4 +1,4 @@
-package wrapperservice;
+package wrapper;
 
 public class StatusResponse {
 

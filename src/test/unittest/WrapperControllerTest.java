@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.Assert.*;
 
-public class WrapperControllerTest extends AbstractTest {
+public class WrapperControllerTest extends AbstractWrapperTest {
 
     @Override
     @Before
@@ -21,7 +21,7 @@ public class WrapperControllerTest extends AbstractTest {
     @Test
     public void testWrongParamName() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("url", AbstractTest.GOOGLE_HOST) // Changed from URI to URL
+                .param("url", AbstractWrapperTest.GOOGLE_HOST) // Changed from URI to URL
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -31,7 +31,7 @@ public class WrapperControllerTest extends AbstractTest {
     @Test
     public void getEmptyHost() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.EMPTY_HOST)
+                .param("uri", AbstractWrapperTest.EMPTY_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -41,7 +41,7 @@ public class WrapperControllerTest extends AbstractTest {
     @Test
     public void getUnknownHost() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.UNKNOWN_HOST)
+                .param("uri", AbstractWrapperTest.UNKNOWN_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -51,7 +51,7 @@ public class WrapperControllerTest extends AbstractTest {
     @Test
     public void getIncompleteHost() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.INCOMPLETE_HOST)
+                .param("uri", AbstractWrapperTest.INCOMPLETE_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -61,7 +61,7 @@ public class WrapperControllerTest extends AbstractTest {
     @Test
     public void getAmazonHost() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.AMAZON_HOST)
+                .param("uri", AbstractWrapperTest.AMAZON_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -71,7 +71,7 @@ public class WrapperControllerTest extends AbstractTest {
     @Test
     public void getNumberedAndPortHost() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.NUMBER_PORT_HOST)
+                .param("uri", AbstractWrapperTest.NUMBER_PORT_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -84,7 +84,7 @@ public class WrapperControllerTest extends AbstractTest {
     public void getGoogleUrl() throws Exception {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.GOOGLE_HOST)
+                .param("uri", AbstractWrapperTest.GOOGLE_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -97,7 +97,7 @@ public class WrapperControllerTest extends AbstractTest {
     public void getUolPortalUrl() throws Exception {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.UOL_PORTAL_HOST)
+                .param("uri", AbstractWrapperTest.UOL_PORTAL_HOST)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -110,7 +110,7 @@ public class WrapperControllerTest extends AbstractTest {
     public void getExploratory_1() throws Exception {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.EXPL_HOST1)
+                .param("uri", AbstractWrapperTest.EXPL_HOST1)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -123,7 +123,7 @@ public class WrapperControllerTest extends AbstractTest {
     public void getExploratory_2() throws Exception {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.EXPL_HOST2)
+                .param("uri", AbstractWrapperTest.EXPL_HOST2)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -136,7 +136,7 @@ public class WrapperControllerTest extends AbstractTest {
     public void getExploratory_3() throws Exception {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.EXPL_HOST3)
+                .param("uri", AbstractWrapperTest.EXPL_HOST3)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -149,7 +149,7 @@ public class WrapperControllerTest extends AbstractTest {
     public void getExploratory_4() throws Exception {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
-                .param("uri", AbstractTest.EXPL_HOST4)
+                .param("uri", AbstractWrapperTest.EXPL_HOST4)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();

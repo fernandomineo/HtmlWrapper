@@ -1,4 +1,4 @@
-package wrapperservice;
+package wrapper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -7,9 +7,9 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
-public class Application {
+public class WrapperApplication {
 
    public static void main(String[] args) {
-       SpringApplication.run(Application.class, args);
+       SpringApplication.run(WrapperApplication.class, args);
     }
 }
