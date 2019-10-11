@@ -7,11 +7,17 @@
     <groupId>com.yamanaka</groupId>
     <artifactId>htmlwrapper</artifactId>
     <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.1.9.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
             <version>2.1.9.RELEASE</version>
         </dependency>
         <dependency>
@@ -64,16 +70,23 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.1.9.RELEASE</version>
                 <configuration>
-                    <mainClass>com.yamanaka.wrapper.WrapperApplication</mainClass>
+                    <mainClass>wrapper.WrapperApplication</mainClass>
                 </configuration>
-            </plugin>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+             </plugin>
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <version>1.4.12</version>
                 <executions>
                     <execution>
-                        <id>default</id>
+                        <id>docker</id>
                         <goals>
                             <goal>build</goal>
                             <goal>push</goal>
@@ -83,9 +96,6 @@
                 <configuration>
                     <repository>com.yamanaka/htmlwrapper</repository>
                     <tag>${project.version}</tag>
-                    <manifest>
-                        <mainClass>com.yamanaka.wrapper.WrapperApplication</mainClass>
-                    </manifest>
                 </configuration>
             </plugin>
         </plugins>

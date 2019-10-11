@@ -32,6 +32,6 @@ public class StatusResponse {
 
     @Override
     public String toString() {
-        return uri + " - " + reachable + " " + error_code + " " + error_message;
+        return uri + " - " + reachable + " - " + error_code + " - " + error_message;
     }
 }

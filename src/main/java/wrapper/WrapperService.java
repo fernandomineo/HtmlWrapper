@@ -3,6 +3,7 @@ package wrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -12,8 +13,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
@@ -79,7 +82,6 @@ public class WrapperService{
                 responseList.add(value);
             }
         } catch (Exception e) {
-            // Ignore all exceptions and add only valid links, i.e: exclude SSLHandshakeExecption, WrongURIRedirections, etc.
             log.error("Internal failure at invokeAll: getLocalizedMessage: " + e.getCause().getMessage());
         } finally{
             connManager.shutdown();
@@ -92,32 +94,39 @@ public class WrapperService{
         final String link = page;
         final CloseableHttpClient cli = client;
         return new Callable<StatusResponse>() {
-            public StatusResponse call() throws Exception {
+            public StatusResponse call()  {
                 if (isValidURI(link)) {
-                    HttpGet get = new HttpGet(link);
-                    HttpResponse response = cli.execute(get);
-                    EntityUtils.consume(response.getEntity());
-                    log.info("Task thread completed: " + Thread.currentThread().getName());
-                    return responseStatus(response, link);
+                    try {
+                        boolean reacheable = false;
+                        String msg = null;
+                        Integer error_code = null;
+                        HttpGet get = new HttpGet(link);
+                        HttpResponse response = cli.execute(get);
+                        Integer code = response.getStatusLine().getStatusCode();
+                        if (code >= 200 & code < 300){
+                            reacheable = true;
+                        } else {
+                            error_code = code;
+                            msg = response.getStatusLine().getReasonPhrase();
+                        }
+                        EntityUtils.consume(response.getEntity());
+                        log.info("Task thread completed: " + Thread.currentThread().getName());
+                        return new StatusResponse(link, reacheable, error_code, msg);
+                    } catch (HttpClientErrorException e) {
+                        String body = e.getResponseBodyAsString();
+                        log.error("HttpClientErrorException Body = " + body);
+                        log.error("Task thread completed in Exception: " + Thread.currentThread().getName());
+                    } catch (ClientProtocolException e) {
+                        log.error("ClientProtocolException = " + e.getCause());
+                    } catch (IOException e) {
+                        log.error("IOException = " + e.getMessage());
+                    }
                 }
                 return null;
             }
         };
     }
 
-    private StatusResponse responseStatus(HttpResponse response, String uri){
-        boolean reacheable = false;
-        String msg = null;
-        Integer error_code = null;
-        Integer code = response.getStatusLine().getStatusCode();
-        if (code >= 200 & code < 300){
-            reacheable = true;
-        } else {
-            error_code = code;
-            msg = response.getStatusLine().getReasonPhrase();
-        }
-        return new StatusResponse(uri, reacheable, error_code, msg);
-    }
     public static boolean isValidURI(String uri){
         try{
             new URL(uri).toURI();

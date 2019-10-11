@@ -5,9 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -47,5 +46,13 @@ public class WrapperController {
             throw new ResponseStatusException(
                     HttpStatus.NOT_ACCEPTABLE, "URI Not acceptable");
         }
+    }
+}
+
+@Controller
+class UnitTest {
+    @GetMapping("/unittest")
+    public String unitTestPage() {
+        return "unittest";
     }
 }
