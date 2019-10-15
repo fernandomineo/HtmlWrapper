@@ -15,13 +15,6 @@ import wrapper.utils.Utils;
 
 import java.util.List;
 
-// https://stackoverflow.com/questions/238547/how-do-you-programmatically-download-a-webpage-in-java
-// https://spring.io/guides/tutorials/bookmarks/
-// https://www.baeldung.com/httpclient-connection-management
-// https://github.com/briansjavablog/multi-threading-with-executorservice/blob/master/src/main/java/com/briansjavablog/concurrency/threads/ExecutorServiceCallableSample.java
-// https://www.baeldung.com/spring-boot-custom-error-page
-// https://www.logicbig.com/tutorials/misc/java-logging/jcl-simple-log.html
-
 @RestController
 public class WrapperController {
     private static Log log = LogFactory.getLog(WrapperController.class);

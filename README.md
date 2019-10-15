@@ -55,18 +55,28 @@ The following will be taken into account when evaluating your solution:
 
 Thank you very much for taking the time to work on this assignment. Have fun coding!
 
-### Execution Details
+### Execution Details: 
+
 Input should be given as request parameter in service path, as example: 
 ```html
+# GET method with URI as parameter
 http://127.0.0.1/wrapper?uri=http://www.google.com.br
 ```
+If its necessary to check some execution details, please add "debug=true" as parameter too. Check below:
+```html
+# GET method with URI and debug as parameteres
+http://127.0.0.1/wrapper?uri=http://www.google.com.br&debug=true
+```
 Output will be presented as requested in json format.
-###### In order to build, test and execute as a docker container, just follow below commands:
+
+In order to build, test and execute as a docker container, just follow below commands:
 ```cmd
 # Clone this project
 git clone https://github.com/Kreditech-Recruiting/technical-challenge-developer-fernando.git
 ```
-###### To perform tests in project please check below:
+**To perform tests in project:**
+
+PS: Maven auxiliary shells(mvnw/mvnw.cmd) was added to source project for user convenience. 
 ```cmd
 ./mvnw test 
 # Run just unit tests:
@@ -74,13 +84,18 @@ git clone https://github.com/Kreditech-Recruiting/technical-challenge-developer-
 # Run just integration tests:
 ./mvnw test -Dtest=WrapperIntegrationTest  
 ```
-###### Generate docker package:
+Generate docker package:
 ```cmd
 ./mvnw clean package spring-boot:repackage
 ```
-###### Load and start service as docker container:
+Load and start service as docker container:
 ```cmd
 docker container run -p 8080:8080 -d --name wrapper com.yamanaka/htmlwrapper:0.1-SNAPSHOT 
 docker start wrapper
 ```
-###### Check the service using docker image IP, port 8080 and "/wrapper" context.
+Check the service using docker image IP, port 8080 and "/wrapper" context.
+ 
+ Execution statistics:
+Mac Mini 2018 - Intel I3:
+
+
