@@ -1,3 +1,5 @@
+package java;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
@@ -159,4 +161,5 @@ public class WrapperUnitTest {
                 + "</html>";
     }
 }
+
 
