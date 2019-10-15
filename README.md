@@ -80,9 +80,9 @@ PS: Maven auxiliary shells(mvnw/mvnw.cmd) were added to source project for conve
 ```cmd
 ./mvnw test 
 # Run just unit tests:
-./mvnw test -Dtest=WrapperUnitTest
+./mvnw test -Dtest=WrapperUnitTests
 # Run just integration tests:
-./mvnw test -Dtest=WrapperIntegrationTest  
+./mvnw test -Dtest=WrapperIntegrationTests  
 ```
 Generate docker package:
 ```cmd

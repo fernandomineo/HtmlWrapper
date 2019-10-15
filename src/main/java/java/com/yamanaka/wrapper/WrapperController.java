@@ -1,4 +1,4 @@
-package wrapper;
+package java.com.yamanaka.wrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import wrapper.utils.Utils;
+import java.com.yamanaka.wrapper.utils.Utils;
 
 import java.util.List;
 import java.util.Optional;

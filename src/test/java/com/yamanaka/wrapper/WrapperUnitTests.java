@@ -1,4 +1,4 @@
-package local;
+package java.com.yamanaka.wrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,11 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import wrapper.StatusResponse;
-import wrapper.WrapperApplication;
-import wrapper.WrapperController;
-import wrapper.WrapperService;
-import wrapper.utils.Utils;
+
+import java.com.yamanaka.wrapper.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +19,7 @@ import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes= WrapperApplication.class)
-public class WrapperUnitTest {
+public class WrapperUnitTests {
     private static Log log = LogFactory.getLog(WrapperController.class);
 
     @Test

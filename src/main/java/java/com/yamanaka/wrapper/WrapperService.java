@@ -1,4 +1,4 @@
-package wrapper;
+package java.com.yamanaka.wrapper;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -12,7 +12,7 @@ import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
-import wrapper.utils.Utils;
+import java.com.yamanaka.wrapper.utils.Utils;
 
 import java.io.IOException;
 import java.net.URL;

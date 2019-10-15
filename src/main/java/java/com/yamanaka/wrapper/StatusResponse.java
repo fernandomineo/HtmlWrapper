@@ -1,4 +1,4 @@
-package wrapper;
+package java.com.yamanaka.wrapper;
 
 import lombok.Getter;
 
