@@ -1,4 +1,3 @@
-import jdk.net.SocketFlow;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
@@ -12,6 +11,7 @@ import wrapper.StatusResponse;
 import wrapper.WrapperApplication;
 import wrapper.WrapperController;
 import wrapper.WrapperService;
+import wrapper.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,6 +25,7 @@ public class WrapperUnitTest {
 
     @Test
     public void errrorPagesTestCase() throws Exception {
+        Utils.DBG = true;
         WrapperService wrap = new WrapperService();
         List<StatusResponse> list = null;
         Document page = Jsoup.parse(getErrorPage());
@@ -41,6 +42,7 @@ public class WrapperUnitTest {
 
     @Test
     public void somePagesTestCase() throws Exception {
+        Utils.DBG = true;
         WrapperService wrap = new WrapperService();
         List<StatusResponse> list = null;
         Document page = Jsoup.parse(getSomePages());
@@ -56,9 +58,10 @@ public class WrapperUnitTest {
     }
 
 
-    private int MAX_TEST_EXECUTION = 10;
+    private int MAX_TEST_EXECUTION = 5;
     @Test
     public void basicLocalLargeTestCase() throws Exception {
+        Utils.DBG = true;
         WrapperService wrap = new WrapperService();
         Set<String> list = new HashSet<String>();
         List<StatusResponse> srList = new ArrayList<StatusResponse>();
@@ -66,19 +69,59 @@ public class WrapperUnitTest {
         String uri = "http://www.uol.com.br";
         long start = System.currentTimeMillis();
         page = Jsoup.connect(uri).get();
+        Utils.DBG = true;
         for (int i = 0; i < MAX_TEST_EXECUTION; i++) {
-            if (null != page) {
-                srList = wrap.getAllLinkStatusResponse(page);
-            }
-            for (StatusResponse sr: srList) {
-                log.info(sr);
-            }
+            srList = wrap.getAllLinkStatusResponse(page);
         }
         long end = System.currentTimeMillis();
         log.info("DEBUG: Execution time SIze "+ MAX_TEST_EXECUTION + " = " + (end - start) + " milliSeconds");
         Assert.assertEquals(200, 200);
     }
-    //DEBUG: Execution time SIze 100 = 1205834 milliSeconds
+
+    @Test
+    public void isValidUriTestCase(){
+        Utils.DBG = true;
+        String uri = "http://www.";
+        Assert.assertTrue(WrapperService.isValidURI(uri));
+        uri = "http://www.terrrraa.com.br";
+        Assert.assertTrue(WrapperService.isValidURI(uri));
+        uri = "http://www.uol.com";
+        Assert.assertTrue(WrapperService.isValidURI(uri));
+        uri = "http://uol.com.br";
+        Assert.assertTrue(WrapperService.isValidURI(uri));
+        uri = "/";
+        Assert.assertFalse(WrapperService.isValidURI(uri));
+        uri = "toPath/toPath/index.html";
+        Assert.assertFalse(WrapperService.isValidURI(uri));
+        uri = "www.uo...com";
+        Assert.assertFalse(WrapperService.isValidURI(uri));
+        uri = "htp://www.uol.com.br";
+        Assert.assertFalse(WrapperService.isValidURI(uri));
+    }
+
+    @Test
+    public void validateStatusResponseTestCase(){
+        WrapperService wrap = new WrapperService();
+        StatusResponse sr = new StatusResponse("http://www.a.com.br", true,200, null);
+        StatusResponse aux = wrap.getStatusResponse("http://www.a.com.br", 200, null);
+        Assert.assertEquals(sr.getError_code(), aux.getError_code());
+
+        sr = new StatusResponse("http://www.a.com.br", true,299, null);
+        aux = wrap.getStatusResponse("http://www.a.com.br", 299, null);
+        Assert.assertEquals(sr.getError_code(), aux.getError_code());
+
+        sr = new StatusResponse("http://www.a.com.br", false,300, "Error");
+        aux = wrap.getStatusResponse("http://www.a.com.br", 300, "Error");
+        Assert.assertEquals(sr.getError_code(), aux.getError_code());
+
+        sr = new StatusResponse("http://www.a.com.br", false,500, "Error");
+        aux = wrap.getStatusResponse("http://www.a.com.br", 500, "Error");
+        Assert.assertEquals(sr.getError_code(), aux.getError_code());
+
+        sr = new StatusResponse("http://www.a.com.br", false,600, "Error");
+        aux = wrap.getStatusResponse("http://www.a.com.br", 600, "Error");
+        Assert.assertEquals(sr.getError_code(), aux.getError_code());
+    }
 
     private String getErrorPage(){
         return "<!DOCTYPE html>"
@@ -112,54 +155,6 @@ public class WrapperUnitTest {
                 + "<a href=\"http://www.cnn.com.br\">link4</a>"
                 + "<a href=\"https://www.dailymail.co.uk/home/index.html\">link2</a>"
                 + "<a href=\"https://disney.fandom.com/wiki/Potatoland\">link2</a>"
-                + "</body>"
-                + "</html>";
-    }
-
-    private String getTestLargeLoadHtml() {
-        return "<!DOCTYPE html>"
-                + "<html>"
-                + "<head>"
-                + "<title>Basic Page test</title>"
-                + "</head>"
-                + "<body>"
-                + "<br>"
-                + "<a href=\"https://httpstat.us/404\">link2</a>"
-                + "<a href=\"https://httpstat.us/500\">link1</a>"
-                + "<a href=\"https://httpstat.us/503\">link2</a>"
-                + "<a href=\"https://httpstat.us/524\">link2</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
-                + "<a href=\"http://www.uol.com.br\">link6</a>"
                 + "</body>"
                 + "</html>";
     }

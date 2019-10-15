@@ -1,6 +1,5 @@
 package wrapper;
 
-import jdk.net.SocketFlow;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -19,10 +18,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
 public class WrapperService{
 
@@ -36,8 +33,7 @@ public class WrapperService{
                 linkSet = listLinks.stream().filter(link -> isValidURI(link.trim())).collect(Collectors.toSet());
             }
         if (linkSet.size() > 0) {
-            //return validateEachLinkStatus(linkSet);
-            return validateEachLinkStatus_COMPLETABLEFUTURE(linkSet);
+            return validateEachLinkStatus(linkSet);
         } else {
             Utils.log.error("Page return is NULL or EMPTY, some sites can reject this connection, for ex. using CAPTCHA validation");
             throw new ResponseStatusException(
@@ -45,131 +41,34 @@ public class WrapperService{
         }
     }
 
-    public List<StatusResponse> validateEachLinkStatus(Set<String> setOfLinks){
-        // Configuring PoolingHttpClient Manager, following lib documentation related to multithreaded request execution.
-        // http://hc.apache.org/httpcomponents-client-4.3.x/tutorial/html/connmgmt.html#d5e380
-        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
-        CloseableHttpClient client = HttpClients.custom()
-                .setConnectionManager(connManager)
-                .build();
-
-        // Ussing newCachedThreadPool to re-use thread and not overload usage.
-        ExecutorService executor = Executors.newCachedThreadPool();
-        Collection<Callable<StatusResponse>> callables = new ArrayList<Callable<StatusResponse>>();
-
-        setOfLinks.stream().forEach(link -> callables.add(createCallables(client, link)));
-
-        List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
-        try {
-            List<Future<StatusResponse>> taskFutureList = executor.invokeAll(callables);
-            taskFutureList.stream().forEach(future -> {
-                Optional<StatusResponse> sr = Optional.empty();
-                try {
-                    sr = Optional.of(future.get());
-                    responseList.add(sr.orElseGet(() -> new StatusResponse("N/A",false, 500, "Internal Server Error - Exception")));
-                } catch (InterruptedException e) {
-                    Utils.log.error( "InterruptedException = " + e.toString());
-                    //e.printStackTrace();
-                } catch (ExecutionException e) {
-                    Utils.log.error("ExecutionException = " + e.toString());
-                }
-            });
-        } catch (InterruptedException e) {
-            //    e.printStackTrace();
-              Utils.log.error("InterruptedException = " + e.toString());
-        } finally{
-            connManager.shutdown();
-            executor.shutdown();
-        }
-        return responseList;
-    }
-
-    private Callable<StatusResponse> createCallables(CloseableHttpClient client, String page){
-        final String link = page;
-        final CloseableHttpClient cli = client;
-        Callable<StatusResponse> callable = () -> call(cli,link);
-        return callable;
-        /*{
-            /*public StatusResponse call()  {
-                if (isValidURI(link)) {
-                    try {
-                        HttpGet get = new HttpGet(link);
-                        HttpResponse response = cli.execute(get);
-                        EntityUtils.consume(response.getEntity());
-                        Utils.log.info("Task thread completed: " + Thread.currentThread().getName());
-                        return getStatusResponse(link,response);
-                    } catch (HttpClientErrorException e) {
-                        String body = e.getResponseBodyAsString();
-                        Utils.log.error("HttpClientErrorException Body = " + body);
-                        Utils.log.error("Task thread completed in Exception: " + Thread.currentThread().getName());
-                    } catch (ClientProtocolException e) {
-                        Utils.log.error("ClientProtocolException = " + e.getCause());
-                    } catch (IOException e) {
-                        Utils.log.error("IOException = " + e.getMessage());
-                    }
-                }
-                return null;
-            }*/
-        //};
-    }
-
-    private StatusResponse call(CloseableHttpClient cli, String link) throws InterruptedException {
-        Optional<StatusResponse> sr = Optional.empty();
-        try {
-            HttpGet get = new HttpGet(link);
-            HttpResponse response = cli.execute(get);
-            EntityUtils.consume(response.getEntity());
-            Utils.log.info("Thread completed: " + Thread.currentThread().getName());
-            if (Utils.DBG) Utils.log.info("Link: " + link);
-            sr = Optional.of(getStatusResponse(link,response));
-        } catch (HttpClientErrorException e) {
-            String body = e.getResponseBodyAsString();
-            Utils.log.error("HttpClientErrorException Body = " + body);
-            Utils.log.error("Task thread completed in Exception: " + Thread.currentThread().getName());
-        } catch (ClientProtocolException e) {
-            Utils.log.error("ClientProtocolException = " + e.getCause());
-        } catch (IOException e) {
-            Utils.log.error("IOException = " + e.getMessage());
-        }
-        return sr.orElseGet(() -> new StatusResponse(link,false, 500, "Internal Server Error - Exception"));
-    }
-
     // https://medium.com/@senanayake.kalpa/fantastic-completablefuture-allof-and-how-to-handle-errors-27e8a97144a0
     // https://stackoverflow.com/questions/27723546/completablefuture-supplyasync-and-thenapply
     // nurkiewicz.com/2013/05/java-8-completablefuture-in-action.html
 
-    List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
-
-    public List<StatusResponse> validateEachLinkStatus_COMPLETABLEFUTURE(Set<String> setOfLinks)  {
+    public List<StatusResponse> validateEachLinkStatus(Set<String> setOfLinks)  {
+        List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
+        // Configuring PoolingHttpClient Manager, following lib documentation related to multithreaded request execution.
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
         CloseableHttpClient client = HttpClients.custom()
                 .setConnectionManager(connManager)
                 .build();
         // Using newCachedThreadPool to re-use thread and not overload usage.
         ExecutorService executor = Executors.newCachedThreadPool();
-
-        //List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
-
         List<CompletableFuture<StatusResponse>> futureStatus = setOfLinks.stream().
                 map(link -> CompletableFuture.supplyAsync(() -> getHostStatus(client, link), executor)).
-                //map(statusResponseCompletableFuture -> statusResponseCompletableFuture.thenApplyAsync(this::add)).
                 collect(Collectors.<CompletableFuture<StatusResponse>>toList());
 
         CompletableFuture<List<StatusResponse>> allDone = sequence(futureStatus);
-
         try {
             responseList = allDone.get();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Utils.log.error("InterruptedException = " + e.toString());
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            Utils.log.error("ExecutionException = " + e.toString());
         } finally {
             connManager.shutdown();
             executor.shutdown();
         }
-
-        responseList.stream().forEach(sr -> Utils.log.debug(sr));
-
         return responseList;
     }
 
@@ -182,26 +81,14 @@ public class WrapperService{
         );
     }
 
-    private StatusResponse add(StatusResponse statusResponse) {
-        responseList.add(statusResponse);
-        return statusResponse;
-    }
-
-    /*private Object addToResponseList(CompletableFuture<StatusResponse> statusResponse) {
-    }
-
-    private void notify(Object o) {
-    }*/
-
     private StatusResponse getHostStatus(CloseableHttpClient cli, String link) {
         Optional<StatusResponse> sr = Optional.empty();
         try {
             HttpGet get = new HttpGet(link);
             HttpResponse response = cli.execute(get);
             EntityUtils.consume(response.getEntity());
-            Utils.log.info("Thread completed: " + Thread.currentThread().getName());
-            if (Utils.DBG) Utils.log.info("Link: " + link);
-            sr = Optional.of(getStatusResponse(link,response));
+            sr = Optional.of(getStatusResponse(link,response.getStatusLine().getStatusCode(),response.getStatusLine().getReasonPhrase()));
+            if (Utils.DBG) Utils.log.info("Completed: " + Thread.currentThread().getName() + " Url= "+ link);
         } catch (HttpClientErrorException e) {
             String body = e.getResponseBodyAsString();
             Utils.log.error("HttpClientErrorException Body = " + body);
@@ -215,18 +102,15 @@ public class WrapperService{
         return sr.orElseGet(() -> new StatusResponse(link, false, 500, "Internal Server Error - Exception"));
     }
 
-    private StatusResponse getStatusResponse(String link, HttpResponse response){
-        boolean reacheable = false;
-        String msg = null;
-        Integer error_code = null;
-        Integer code = response.getStatusLine().getStatusCode();
+    public StatusResponse getStatusResponse(String link, int code, String msg){
+        boolean reach = false;
+        String error_msg = null;
         if (code >= 200 & code < 300){
-            reacheable = true;
+            reach = true;
         } else {
-            error_code = code;
-            msg = response.getStatusLine().getReasonPhrase();
+            error_msg = msg;
         }
-        return new StatusResponse(link, reacheable, error_code, msg);
+        return new StatusResponse(link,reach, code, error_msg);
     }
 
     public static boolean isValidURI(String uri){
@@ -235,6 +119,7 @@ public class WrapperService{
         }catch (Exception e){
             return false;
         }
+
         return true;
     }
 }

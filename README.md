@@ -62,7 +62,7 @@ Input should be given as request parameter in service path, as example:
 # GET method with URI as parameter
 http://127.0.0.1/wrapper?uri=http://www.google.com.br
 ```
-If its necessary to check some execution details, please add "debug=true" as parameter too. Check below:
+If necessary to check some execution details, please add "debug=true" as parameter too, it's optional parameter. Check below:
 ```html
 # GET method with URI and debug as parameteres
 http://127.0.0.1/wrapper?uri=http://www.google.com.br&debug=true

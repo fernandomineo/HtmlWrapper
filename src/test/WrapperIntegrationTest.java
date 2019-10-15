@@ -51,6 +51,7 @@ public class WrapperIntegrationTest {
     public void wrongParamNameTestCase() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("url", WrapperIntegrationTest.GOOGLE_HOST) // Changed from URI to URL
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -61,6 +62,7 @@ public class WrapperIntegrationTest {
     public void emptyHostTestCase() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.EMPTY_HOST)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -71,6 +73,7 @@ public class WrapperIntegrationTest {
     public void unknownHostTestCase() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.UNKNOWN_HOST)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -81,6 +84,7 @@ public class WrapperIntegrationTest {
     public void incompleteHostTestCase() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.INCOMPLETE_HOST)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -91,16 +95,20 @@ public class WrapperIntegrationTest {
     public void amazonHostTestCase() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.AMAZON_HOST)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
         Assert.assertEquals(200, status);
+        boolean isValid = isValidJson(mvcResult.getResponse().getContentAsString());
+        Assert.assertTrue(isValid);
     }
 
     @Test
     public void numberedAndPortHostTestCase() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.NUMBER_PORT_HOST)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -114,6 +122,7 @@ public class WrapperIntegrationTest {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.GOOGLE_HOST)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -127,6 +136,7 @@ public class WrapperIntegrationTest {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.UOL_PORTAL_HOST)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -140,6 +150,7 @@ public class WrapperIntegrationTest {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.EXPL_HOST1)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -153,6 +164,7 @@ public class WrapperIntegrationTest {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.EXPL_HOST2)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -166,6 +178,7 @@ public class WrapperIntegrationTest {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.EXPL_HOST3)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
@@ -179,6 +192,7 @@ public class WrapperIntegrationTest {
         // Short test ~ 15 links
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wrapper")
                 .param("uri", WrapperIntegrationTest.EXPL_HOST4)
+                .param("debug", "true")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
         int status = mvcResult.getResponse().getStatus();
