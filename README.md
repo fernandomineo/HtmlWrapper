@@ -76,7 +76,7 @@ git clone https://github.com/Kreditech-Recruiting/technical-challenge-developer-
 ```
 **To perform tests in project:**
 
-PS: Maven auxiliary shells(mvnw/mvnw.cmd) was added to source project for user convenience. 
+PS: Maven auxiliary shells(mvnw/mvnw.cmd) were added to source project for convenience. 
 ```cmd
 ./mvnw test 
 # Run just unit tests:
@@ -94,8 +94,6 @@ docker container run -p 8080:8080 -d --name wrapper com.yamanaka/htmlwrapper:0.1
 docker start wrapper
 ```
 Check the service using docker image IP, port 8080 and "/wrapper" context.
- 
- Execution statistics:
-Mac Mini 2018 - Intel I3:
+
 
 

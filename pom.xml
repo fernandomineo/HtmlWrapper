@@ -116,6 +116,7 @@
                 <version>2.22.1</version>
                 <configuration>
                     <forkMode>always</forkMode>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
         </plugins>
