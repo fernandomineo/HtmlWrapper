@@ -20,7 +20,6 @@ import java.util.Optional;
 public class WrapperController {
     private static Log log = LogFactory.getLog(WrapperController.class);
 
-
     @RequestMapping("/wrapper")
     public List<StatusResponse> getReachableList(@RequestParam(value = "uri") String uri, @RequestParam(required = false) boolean debug) {
         Utils.DBG = debug;
