@@ -1,4 +1,4 @@
-package java;
+package local;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
