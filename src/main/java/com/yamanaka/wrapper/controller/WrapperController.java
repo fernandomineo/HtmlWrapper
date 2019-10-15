@@ -1,6 +1,8 @@
-package com.yamanaka.wrapper;
+package com.yamanaka.wrapper.controller;
 
-import com.yamanaka.wrapper.utils.Utils;
+import com.yamanaka.wrapper.dto.StatusResponse;
+import com.yamanaka.wrapper.service.WrapperService;
+import com.yamanaka.wrapper.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
@@ -23,7 +25,7 @@ public class WrapperController {
     public List<StatusResponse> getReachableList(@RequestParam(value = "uri") String uri, @RequestParam(required = false) boolean debug) {
         Utils.DBG = debug;
         Optional<Document> page;
-        if (WrapperService.isValidURI(uri)) {
+        if (Utils.isValidURI(uri)) {
             try {
                 page = Optional.of(Jsoup.connect(uri).userAgent(Utils.userAgent).get());
             } catch (Exception e) {// Jsoup get page not found, normally its related to Unknown Host.

@@ -1,5 +1,5 @@
 import com.yamanaka.wrapper.WrapperApplication;
-import com.yamanaka.wrapper.WrapperController;
+import com.yamanaka.wrapper.controller.WrapperController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;

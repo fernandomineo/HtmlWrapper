@@ -1,9 +1,9 @@
 
-import com.yamanaka.wrapper.StatusResponse;
+import com.yamanaka.wrapper.dto.StatusResponse;
 import com.yamanaka.wrapper.WrapperApplication;
-import com.yamanaka.wrapper.WrapperController;
-import com.yamanaka.wrapper.WrapperService;
-import com.yamanaka.wrapper.utils.Utils;
+import com.yamanaka.wrapper.controller.WrapperController;
+import com.yamanaka.wrapper.service.WrapperService;
+import com.yamanaka.wrapper.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
@@ -84,31 +84,31 @@ public class WrapperUnitTests {
     public void isValidUriTestCase() {
         Utils.DBG = true;
         String uri = "http://www.";
-        Assert.assertTrue(WrapperService.isValidURI(uri));
+        Assert.assertTrue(Utils.isValidURI(uri));
         uri = "http://www.terrrraa.com.br";
-        Assert.assertTrue(WrapperService.isValidURI(uri));
+        Assert.assertTrue(Utils.isValidURI(uri));
         uri = "http://www.uol.com";
-        Assert.assertTrue(WrapperService.isValidURI(uri));
+        Assert.assertTrue(Utils.isValidURI(uri));
         uri = "http://uol.com.br";
-        Assert.assertTrue(WrapperService.isValidURI(uri));
+        Assert.assertTrue(Utils.isValidURI(uri));
         uri = "/";
-        Assert.assertFalse(WrapperService.isValidURI(uri));
+        Assert.assertFalse(Utils.isValidURI(uri));
         uri = "toPath/toPath/index.html";
-        Assert.assertFalse(WrapperService.isValidURI(uri));
+        Assert.assertFalse(Utils.isValidURI(uri));
         uri = "www.uo...com";
-        Assert.assertFalse(WrapperService.isValidURI(uri));
+        Assert.assertFalse(Utils.isValidURI(uri));
         uri = "htp://www.uol.com.br";
-        Assert.assertFalse(WrapperService.isValidURI(uri));
+        Assert.assertFalse(Utils.isValidURI(uri));
     }
 
     @Test
     public void validateStatusResponseTestCase() {
         WrapperService wrap = new WrapperService();
-        StatusResponse sr = new StatusResponse("http://www.a.com.br", true, 200, null);
+        StatusResponse sr = new StatusResponse("http://www.a.com.br", true, null, null);
         StatusResponse aux = wrap.getStatusResponse("http://www.a.com.br", 200, null);
         Assert.assertEquals(sr.getError_code(), aux.getError_code());
 
-        sr = new StatusResponse("http://www.a.com.br", true, 299, null);
+        sr = new StatusResponse("http://www.a.com.br", true, null, null);
         aux = wrap.getStatusResponse("http://www.a.com.br", 299, null);
         Assert.assertEquals(sr.getError_code(), aux.getError_code());
 

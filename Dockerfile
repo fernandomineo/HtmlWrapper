@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
 VOLUME /tmp
 
-COPY target/htmlwrapper-0.1-SNAPSHOT.jar htmlwrapper-0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","htmlwrapper-0.1-SNAPSHOT.jar"]
+COPY target/htmlwrapper-1.0.jar htmlwrapper-1.0.jar
+ENTRYPOINT ["java","-jar","htmlwrapper-1.0.jar"]
