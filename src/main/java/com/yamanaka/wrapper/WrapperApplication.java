@@ -1,4 +1,4 @@
-package java.com.yamanaka.wrapper;
+package com.yamanaka.wrapper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 @EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
 public class WrapperApplication {
 
-   public static void main(String[] args) {
-       SpringApplication.run(WrapperApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(WrapperApplication.class, args);
     }
 }

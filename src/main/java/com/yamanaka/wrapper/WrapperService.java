@@ -1,5 +1,6 @@
-package java.com.yamanaka.wrapper;
+package com.yamanaka.wrapper;
 
+import com.yamanaka.wrapper.utils.Utils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -12,26 +13,28 @@ import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
-import java.com.yamanaka.wrapper.utils.Utils;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 
-public class WrapperService{
+public class WrapperService {
 
-    public List<StatusResponse> getAllLinkStatusResponse(Document page)  {
+    public List<StatusResponse> getAllLinkStatusResponse(Document page) {
         Set<String> linkSet = new LinkedHashSet<String>();
         if (null != page) {
             Elements links = page.getElementsByTag("a");
             List<String> listLinks = links.eachAttr("abs:href");
             if (listLinks.size() > 0)
                 if (Utils.DBG) listLinks.stream().forEach(link -> Utils.log.info(link));
-                linkSet = listLinks.stream().filter(link -> isValidURI(link.trim())).collect(Collectors.toSet());
-            }
+            linkSet = listLinks.stream().filter(link -> isValidURI(link.trim())).collect(Collectors.toSet());
+        }
         if (linkSet.size() > 0) {
             return validateEachLinkStatus(linkSet);
         } else {
@@ -45,7 +48,7 @@ public class WrapperService{
     // https://stackoverflow.com/questions/27723546/completablefuture-supplyasync-and-thenapply
     // nurkiewicz.com/2013/05/java-8-completablefuture-in-action.html
 
-    public List<StatusResponse> validateEachLinkStatus(Set<String> setOfLinks)  {
+    public List<StatusResponse> validateEachLinkStatus(Set<String> setOfLinks) {
         List<StatusResponse> responseList = Collections.synchronizedList(new ArrayList<StatusResponse>());
         // Configuring PoolingHttpClient Manager, following lib documentation related to multithreaded request execution.
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
@@ -56,7 +59,7 @@ public class WrapperService{
         ExecutorService executor = Executors.newCachedThreadPool();
         List<CompletableFuture<StatusResponse>> futureStatus = setOfLinks.stream().
                 map(link -> CompletableFuture.supplyAsync(() -> getHostStatus(client, link), executor)).
-                collect(Collectors.<CompletableFuture<StatusResponse>>toList());
+                collect(Collectors.toList());
 
         CompletableFuture<List<StatusResponse>> allDone = sequence(futureStatus);
         try {
@@ -77,7 +80,7 @@ public class WrapperService{
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
         return allDoneFuture.thenApply(v -> futures.stream().
                 map(future -> future.join()).
-                collect(Collectors.<StatusResponse>toList())
+                collect(Collectors.toList())
         );
     }
 
@@ -87,8 +90,8 @@ public class WrapperService{
             HttpGet get = new HttpGet(link);
             HttpResponse response = cli.execute(get);
             EntityUtils.consume(response.getEntity());
-            sr = Optional.of(getStatusResponse(link,response.getStatusLine().getStatusCode(),response.getStatusLine().getReasonPhrase()));
-            if (Utils.DBG) Utils.log.info("Completed: " + Thread.currentThread().getName() + " Url= "+ link);
+            sr = Optional.of(getStatusResponse(link, response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+            if (Utils.DBG) Utils.log.info("Completed: " + Thread.currentThread().getName() + " Url= " + link);
         } catch (HttpClientErrorException e) {
             String body = e.getResponseBodyAsString();
             Utils.log.error("HttpClientErrorException Body = " + body);
@@ -102,21 +105,21 @@ public class WrapperService{
         return sr.orElseGet(() -> new StatusResponse(link, false, 500, "Internal Server Error - Exception"));
     }
 
-    public StatusResponse getStatusResponse(String link, int code, String msg){
+    public StatusResponse getStatusResponse(String link, int code, String msg) {
         boolean reach = false;
         String error_msg = null;
-        if (code >= 200 & code < 300){
+        if (code >= 200 & code < 300) {
             reach = true;
         } else {
             error_msg = msg;
         }
-        return new StatusResponse(link,reach, code, error_msg);
+        return new StatusResponse(link, reach, code, error_msg);
     }
 
-    public static boolean isValidURI(String uri){
-        try{
+    public static boolean isValidURI(String uri) {
+        try {
             new URL(uri).toURI();
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
 

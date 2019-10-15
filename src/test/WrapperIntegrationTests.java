@@ -1,5 +1,5 @@
-package java.com.yamanaka.wrapper;
-
+import com.yamanaka.wrapper.WrapperApplication;
+import com.yamanaka.wrapper.WrapperController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -19,21 +19,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes= WrapperApplication.class)
+@SpringBootTest(classes = WrapperApplication.class)
 public class WrapperIntegrationTests {
-    private static String INCOMPLETE_HOST="http://www.";
-    private static String EMPTY_HOST="";
-    private static String UNKNOWN_HOST="http://www.terrrraa.com.br";
-    private static String NUMBER_PORT_HOST="http://216.58.202.206:80";
-    private static String AMAZON_HOST="http://www.amazon.com.br";
+    private static String INCOMPLETE_HOST = "http://www.";
+    private static String EMPTY_HOST = "";
+    private static String UNKNOWN_HOST = "http://www.terrrraa.com.br";
+    private static String NUMBER_PORT_HOST = "http://216.58.202.206:80";
+    private static String AMAZON_HOST = "http://www.amazon.com.br";
     //Short list ~ 15 Links in page
-    private static String GOOGLE_HOST="http://www.google.com.br";
+    private static String GOOGLE_HOST = "http://www.google.com.br";
     // Large list ~ 450 links in page
-    private static String UOL_PORTAL_HOST="http://www.uol.com.br";
+    private static String UOL_PORTAL_HOST = "http://www.uol.com.br";
     // Exploratory Tests = 4 links
-    private static String EXPL_HOST1="http://www.terra.com.br";
-    private static String EXPL_HOST2="http://www.yahoo.com.br";
-    private static String EXPL_HOST3="http://www.meutimao.com.br";
+    private static String EXPL_HOST1 = "http://www.terra.com.br";
+    private static String EXPL_HOST2 = "http://www.yahoo.com.br";
+    private static String EXPL_HOST3 = "http://www.meutimao.com.br";
     private static String EXPL_HOST4 = "http://www.milliondollarhomepage.com/";
 
     private static Log log = LogFactory.getLog(WrapperController.class);
@@ -201,7 +201,7 @@ public class WrapperIntegrationTests {
         Assert.assertTrue(isValid);
     }
 
-    public boolean isValidJson(String input){
+    public boolean isValidJson(String input) {
         try {
             new JSONArray(input);
         } catch (JSONException ex1) {

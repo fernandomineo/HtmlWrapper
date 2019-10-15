@@ -1,5 +1,9 @@
-package java.com.yamanaka.wrapper;
 
+import com.yamanaka.wrapper.StatusResponse;
+import com.yamanaka.wrapper.WrapperApplication;
+import com.yamanaka.wrapper.WrapperController;
+import com.yamanaka.wrapper.WrapperService;
+import com.yamanaka.wrapper.utils.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
@@ -10,15 +14,13 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.com.yamanaka.wrapper.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes= WrapperApplication.class)
+@SpringBootTest(classes = WrapperApplication.class)
 public class WrapperUnitTests {
     private static Log log = LogFactory.getLog(WrapperController.class);
 
@@ -32,8 +34,8 @@ public class WrapperUnitTests {
             list = wrap.getAllLinkStatusResponse(page);
         }
         for (StatusResponse item : list) {
-            if (null != item){
-                log.debug("StatusResponse: "+ item.toString());
+            if (null != item) {
+                log.debug("StatusResponse: " + item.toString());
             }
         }
         Assert.assertEquals(200, 200);
@@ -49,8 +51,8 @@ public class WrapperUnitTests {
             list = wrap.getAllLinkStatusResponse(page);
         }
         for (StatusResponse item : list) {
-            if (null != item){
-                log.debug("StatusResponse: "+ item.toString());
+            if (null != item) {
+                log.debug("StatusResponse: " + item.toString());
             }
         }
         Assert.assertEquals(200, 200);
@@ -58,6 +60,7 @@ public class WrapperUnitTests {
 
 
     private int MAX_TEST_EXECUTION = 5;
+
     @Test
     public void basicLocalLargeTestCase() throws Exception {
         Utils.DBG = true;
@@ -73,12 +76,12 @@ public class WrapperUnitTests {
             srList = wrap.getAllLinkStatusResponse(page);
         }
         long end = System.currentTimeMillis();
-        log.info("DEBUG: Execution time SIze "+ MAX_TEST_EXECUTION + " = " + (end - start) + " milliSeconds");
+        log.info("DEBUG: Execution time SIze " + MAX_TEST_EXECUTION + " = " + (end - start) + " milliSeconds");
         Assert.assertEquals(200, 200);
     }
 
     @Test
-    public void isValidUriTestCase(){
+    public void isValidUriTestCase() {
         Utils.DBG = true;
         String uri = "http://www.";
         Assert.assertTrue(WrapperService.isValidURI(uri));
@@ -99,30 +102,30 @@ public class WrapperUnitTests {
     }
 
     @Test
-    public void validateStatusResponseTestCase(){
+    public void validateStatusResponseTestCase() {
         WrapperService wrap = new WrapperService();
-        StatusResponse sr = new StatusResponse("http://www.a.com.br", true,200, null);
+        StatusResponse sr = new StatusResponse("http://www.a.com.br", true, 200, null);
         StatusResponse aux = wrap.getStatusResponse("http://www.a.com.br", 200, null);
         Assert.assertEquals(sr.getError_code(), aux.getError_code());
 
-        sr = new StatusResponse("http://www.a.com.br", true,299, null);
+        sr = new StatusResponse("http://www.a.com.br", true, 299, null);
         aux = wrap.getStatusResponse("http://www.a.com.br", 299, null);
         Assert.assertEquals(sr.getError_code(), aux.getError_code());
 
-        sr = new StatusResponse("http://www.a.com.br", false,300, "Error");
+        sr = new StatusResponse("http://www.a.com.br", false, 300, "Error");
         aux = wrap.getStatusResponse("http://www.a.com.br", 300, "Error");
         Assert.assertEquals(sr.getError_code(), aux.getError_code());
 
-        sr = new StatusResponse("http://www.a.com.br", false,500, "Error");
+        sr = new StatusResponse("http://www.a.com.br", false, 500, "Error");
         aux = wrap.getStatusResponse("http://www.a.com.br", 500, "Error");
         Assert.assertEquals(sr.getError_code(), aux.getError_code());
 
-        sr = new StatusResponse("http://www.a.com.br", false,600, "Error");
+        sr = new StatusResponse("http://www.a.com.br", false, 600, "Error");
         aux = wrap.getStatusResponse("http://www.a.com.br", 600, "Error");
         Assert.assertEquals(sr.getError_code(), aux.getError_code());
     }
 
-    private String getErrorPage(){
+    private String getErrorPage() {
         return "<!DOCTYPE html>"
                 + "<html>"
                 + "<head>"
@@ -142,7 +145,7 @@ public class WrapperUnitTests {
                 + "</html>";
     }
 
-    private String getSomePages(){
+    private String getSomePages() {
         return "<!DOCTYPE html>"
                 + "<html>"
                 + "<head>"

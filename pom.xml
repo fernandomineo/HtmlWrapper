@@ -56,16 +56,21 @@
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
         </dependency>
-       <!-- <dependency>
+       <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <version>2.22.2</version>
-        </dependency> -->
+        </dependency>
         <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.22.2</version>
+        </dependency>
+        <!--<dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.5</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -81,13 +86,14 @@
     </properties>
 
     <build>
+        <testSourceDirectory>${project.basedir}/src/test</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.1.9.RELEASE</version>
                 <configuration>
-                    <mainClass>java.com.yamanaka.wrapper.WrapperApplication</mainClass>
+                    <mainClass>com.yamanaka.wrapper.WrapperApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -120,10 +126,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <includes>
-                        <include>**/WrapperIntegrationTests.java</include>
-                        <include>**/WrapperUnitTests.java</include>
-                    </includes>
+                    <forkMode>always</forkMode>
                 </configuration>
             </plugin>
             <plugin>
@@ -131,10 +134,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <includes>
-                        <include>**/WrapperIntegrationTests.java</include>
-                        <include>**/WrapperUnitTests.java</include>
-                    </includes>
+                    <forkMode>always</forkMode>
                 </configuration>
             </plugin>
         </plugins>

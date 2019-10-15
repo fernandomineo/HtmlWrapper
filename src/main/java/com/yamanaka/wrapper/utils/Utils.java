@@ -1,8 +1,8 @@
-package java.com.yamanaka.wrapper.utils;
+package com.yamanaka.wrapper.utils;
 
+import com.yamanaka.wrapper.WrapperService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import java.com.yamanaka.wrapper.WrapperService;
 
 public class Utils {
 

@@ -1,20 +1,24 @@
-package java.com.yamanaka.wrapper;
+package com.yamanaka.wrapper;
 
 import lombok.Getter;
 
 public class StatusResponse {
 
-    private @Getter String uri;
-    private @Getter Boolean reachable;
-    private @Getter Integer error_code;
-    private @Getter String error_message;
+    private @Getter
+    String uri;
+    private @Getter
+    Boolean reachable;
+    private @Getter
+    Integer error_code;
+    private @Getter
+    String error_message;
 
-    public StatusResponse(String uri, Boolean reachable, Integer error_code, String error_message){
+    public StatusResponse(String uri, Boolean reachable, Integer error_code, String error_message) {
         this.uri = uri;
         this.reachable = reachable;
         this.error_code = error_code;
         this.error_message = error_message;
-     }
+    }
 
     @Override
     public String toString() {
