@@ -55,6 +55,7 @@ The following will be taken into account when evaluating your solution:
 
 Thank you very much for taking the time to work on this assignment. Have fun coding!
 
+----
 ### Execution Details: 
 
 Input should be given as request parameter in service path, as example: 
@@ -74,26 +75,40 @@ In order to build, test and execute as a docker container, just follow below com
 # Clone this project
 git clone https://github.com/Kreditech-Recruiting/technical-challenge-developer-fernando.git
 ```
+---
 **To perform tests in project:**
 
-PS: Maven auxiliary shells(mvnw/mvnw.cmd) were added to source project for convenience. 
+PS_1: Maven auxiliary shells(mvnw/mvnw.cmd) were added to source project for convenience. 
+PS_2: Execution time based on computer: Mac Mini - Intel Core i3 (3,6 GHz)
+
+Run all tests developed, Unit and Integration tests, execution time: ~ 4 min.
 ```cmd
-./mvnw test 
-# Run just unit tests:
+./mvnw clean compile test
+```
+Run just unit tests, execution time: ~ 1.5 min
+```cmd
 ./mvnw test -Dtest=WrapperUnitTests
-# Run just integration tests:
+```
+Run just integration tests,execution time: ~ 4 min
+```cmd
 ./mvnw test -Dtest=WrapperIntegrationTests  
 ```
+----
 Generate docker package:
 ```cmd
 ./mvnw clean package spring-boot:repackage
 ```
 Load and start service as docker container:
 ```cmd
-docker container run -p 8080:8080 -d --name wrapper com.yamanaka/htmlwrapper:0.1-SNAPSHOT 
+docker container run -p 8080:8080 -d --name wrapper com.yamanaka/htmlwrapper:1.0 
 docker start wrapper
 ```
 Check the service using docker image IP, port 8080 and "/wrapper" context.
 
+To stop and remove image:
+```cmd
+docker stop wrapper
+docker rm wrapper
+```
 
 
